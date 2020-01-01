@@ -9,10 +9,25 @@ test('main', async t => {
 
 	try {
 		await execa(path.join(__dirname, 'cli.js'), [path.join(__dirname, 'fixture.app')], {cwd});
-	} catch (err) {
+	} catch (error) {
 		// Silence code signing failure
-		if (!/Code signing failed/.test(err.message)) {
-			throw err;
+		if (!error.message.includes('Code signing failed')) {
+			throw error;
+		}
+	}
+
+	t.true(fs.existsSync(path.join(cwd, 'Fixture 0.0.1.dmg')));
+});
+
+test('binary plist', async t => {
+	const cwd = tempy.directory();
+
+	try {
+		await execa(path.join(__dirname, 'cli.js'), [path.join(__dirname, 'fixture-with-binary-plist.app')], {cwd});
+	} catch (error) {
+		// Silence code signing failure
+		if (!error.message.includes('Code signing failed')) {
+			throw error;
 		}
 	}
 
